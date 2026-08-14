@@ -256,6 +256,11 @@ make showcase
 docker build -t rl-arm-reward-shaping . && docker run -p 8501:8501 rl-arm-reward-shaping
 ```
 
+Built and verified on `linux/arm64`: 1.98 GB, container reports healthy, and the
+trained policy loads and evaluates from inside the image. The image carries only
+the five models the showcase actually loads — the sweep arms, probe runs and the
+8M comparison seeds are part of the write-up, not the app.
+
 ---
 
 ## How it's built
