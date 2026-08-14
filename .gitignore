@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# Training logs are build outputs (~32 MB of per-episode CSV). The plots built
+# from them are committed under reports/figures; `make final` regenerates the
+# logs. Sweep and probe runs are exploratory and are not cited by name anywhere.
+artifacts/logs/
+
+# Models: keep only the five the shipped app and the documented GIFs need, not
+# all 55 checkpoints from every sweep arm.
+artifacts/*
+!artifacts/final_v6_goalfocus_seed0.zip
+!artifacts/final_v6_goalfocus_seed0_ckpt200000.zip
+!artifacts/final_v6_goalfocus_seed0_ckpt2000000.zip
+!artifacts/v2_distance_seed0.zip
+!artifacts/v4_potential_seed0.zip

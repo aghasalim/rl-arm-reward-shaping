@@ -1,0 +1,62 @@
+[
+  {
+    "success_rate": 0.013333333333333334,
+    "collision_rate": 0.22,
+    "timeout_rate": 0.7666666666666666,
+    "mean_final_dist": 0.47872523479513557,
+    "mean_len": 163.26,
+    "mean_return": 5.694081489614779,
+    "reached_target_rate": 0.5866666666666667,
+    "settle_given_reached": 0.022727272727272728,
+    "mean_speed_near": 0.22769052406431428,
+    "mean_collision_step": 38.24242424242424,
+    "n_episodes": 150,
+    "arm": "N_k000",
+    "config": {
+      "shaping_weight": 10.0,
+      "collision_penalty": 10.0,
+      "vel_weight": 0.0,
+      "use_obstacle": true
+    }
+  },
+  {
+    "success_rate": 0.04,
+    "collision_rate": 0.22666666666666666,
+    "timeout_rate": 0.7333333333333334,
+    "mean_final_dist": 0.4771705270096418,
+    "mean_len": 163.28666666666666,
+    "mean_return": 8.011691340823573,
+    "reached_target_rate": 0.5466666666666666,
+    "settle_given_reached": 0.07317073170731707,
+    "mean_speed_near": 0.1828986498555947,
+    "mean_collision_step": 50.0,
+    "n_episodes": 150,
+    "arm": "P_k005",
+    "config": {
+      "shaping_weight": 10.0,
+      "collision_penalty": 10.0,
+      "vel_weight": 0.05,
+      "use_obstacle": true
+    }
+  },
+  {
+    "success_rate": 0.06,
+    "collision_rate": 0.18,
+    "timeout_rate": 0.76,
+    "mean_final_dist": 0.48826113974752994,
+    "mean_len": 169.45333333333335,
+    "mean_return": 10.531586547857533,
+    "reached_target_rate": 0.46,
+    "settle_given_reached": 0.13043478260869565,
+    "mean_speed_near": 0.1368527166291863,
+    "mean_collision_step": 57.44444444444444,
+    "n_episodes": 150,
+    "arm": "Q_k010",
+    "config": {
+      "shaping_weight": 10.0,
+      "collision_penalty": 10.0,
+      "vel_weight": 0.1,
+      "use_obstacle": true
+    }
+  }
+]

@@ -1,0 +1,10 @@
+# Without this the build context ships the whole virtualenv.
+.venv/
+.git/
+.github/
+__pycache__/
+*.pyc
+.pytest_cache/
+artifacts/sweep_*
+artifacts/probe_*
+tests/
