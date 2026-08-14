@@ -146,21 +146,28 @@ layouts (seeds 10000–10199, disjoint from training), deterministic actions.
 Training reward is never compared across versions — v2 and v4 aren't even in the
 same units. Full table in [reports/results.md](reports/results.md).
 
-| reward | success | collision | timeout | reached target | settled given reached | final dist |
-|---|---|---|---|---|---|---|
-| random policy | 0.0% | 52.0% | 48.0% | 15.0% | 0.0% | 1.527 m |
-| v1 sparse | 0.0% | 42.0% | 58.0% | 4.0% | 0.0% | 1.921 m |
-| v2 distance | 0.0% | **100.0%** | 0.0% | 7.0% | 0.0% | 1.832 m |
-| v3 penalties | 0.0% | **100.0%** | 0.0% | 4.0% | 0.0% | 1.691 m |
-| v4 potential | 0.0% | 4.0% | **96.0%** | 9.0% | 0.0% | 1.512 m |
-| v5 progress | 0.0% | 11.5% | 88.5% | 22.0% | 0.0% | 0.594 m |
-| **v6 goal-focus** (5 seeds) | **43.2% ± 5.8%** | 17.3% | 39.5% | 67.1% | 64.2% | **0.371 m** |
-| *PD oracle (no learning)* | *73.5%* | *25.5%* | — | — | — | — |
+| reward | steps | success | collision | timeout | reached target | settled given reached | final dist |
+|---|---|---|---|---|---|---|---|
+| random policy | — | 0.0% | 45.0% | 55.0% | 10.0% | 0.0% | 1.652 m |
+| v1 sparse | 1.2M | 0.0% | 42.0% | 58.0% | 4.0% | 0.0% | 1.921 m |
+| v2 distance | 1.2M | 0.0% | **100.0%** | 0.0% | 7.0% | 0.0% | 1.832 m |
+| v3 penalties | 1.2M | 0.0% | **100.0%** | 0.0% | 4.0% | 0.0% | 1.691 m |
+| v4 potential | 1.2M | 0.0% | 4.0% | **96.0%** | 9.0% | 0.0% | 1.512 m |
+| v5 progress | 1.2M | 0.0% | 11.5% | 88.5% | 22.0% | 0.0% | 0.594 m |
+| v6 goal-focus | 1.2M | 0.0% | 14.0% | 86.0% | **45.5%** | 0.0% | 0.440 m |
+| **v6 goal-focus** (5 seeds) | 3M | **43.2% ± 5.8%** | 17.3% | 39.5% | 67.1% | 64.2% | **0.371 m** |
+| *PD oracle (no learning)* | — | *73.5%* | *25.5%* | — | — | — | — |
 
-Read the last two columns across the rows: v1–v4 never reach the target, v5
-reaches it 22% of the time and settles **never**, v6 reaches it 67% of the time
-and settles in 64% of those. The two exploits show up as the two extremes —
-v2/v3 collide in *every* episode, v4 times out in almost every episode.
+Rows 2–7 share a 1.2M-step budget so they are directly comparable; the final row
+is the same reward given 3M steps and five seeds. Note that v6 at 1.2M still
+scores **0%** — it reaches the target three times as often as any earlier version
+but has not yet learned to stop. The reward change and the training budget both
+had to be right.
+
+Read the last two columns down the table: v1–v4 essentially never reach the
+target, v5 reaches it 22% of the time and settles **never**, v6 at 3M reaches it
+67% of the time and settles in 64% of those. The two exploits show up as the two
+extremes — v2/v3 collide in *every* episode, v4 times out in almost every one.
 
 **The hand-written PD controller still beats the agent on success, 73.5% to
 43.2%, and I am not going to pretend otherwise.** What the agent does better is
@@ -283,7 +290,7 @@ src/rlarm/
   evaluate.py   fixed success criterion + reward-hacking diagnostics
   sweep.py      parallel configuration sweeps
   report.py     scores every policy, writes reports/results.md
-  plots.py      training curves (task success, never reward)
+  plots.py      training curves (task metrics, never reward)
   record.py     GIF recording on fixed seeds
 app/showcase.py Streamlit showcase
 tests/          physics and env-contract tests

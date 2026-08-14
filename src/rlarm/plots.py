@@ -47,18 +47,23 @@ def shaping_comparison(out: Path | None = None) -> Path:
         if not f.exists():
             continue
         df = pd.read_csv(f)
+        # Success is deliberately NOT one of these panels: at this 1.2M budget
+        # every version scores a flat zero, so the panel would carry no
+        # information while looking like a broken axis. Final distance is the
+        # version-independent measure that actually separates them, and the
+        # success numbers live in reports/results.md.
         for ax, col, label in zip(
-            axes, ["success", "collision", "ep_len"],
-            ["success rate", "collision rate", "episode length"],
+            axes, ["final_dist", "collision", "ep_len"],
+            ["mean final distance (m)", "collision rate", "episode length"],
         ):
             x, y = _binned(df, col)
             ax.plot(x / 1e6, y, color=color, label=version, lw=1.6)
             ax.set_xlabel("million timesteps")
             ax.set_ylabel(label)
             ax.grid(alpha=0.25)
-    axes[0].set_title("Task success (identical criterion for all versions)")
-    axes[1].set_title("Collision rate")
-    axes[2].set_title("Episode length")
+    axes[0].set_title("How close it gets (lower is better)")
+    axes[1].set_title("Collision rate — exploit #1 is the pair pinned at 1.0")
+    axes[2].set_title("Episode length — suicide vs stalling")
     axes[2].legend(fontsize=8)
     fig.tight_layout()
     out = Path(out or FIGURES / "reward_shaping_comparison.png")

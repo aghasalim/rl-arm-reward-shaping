@@ -1,15 +1,15 @@
 {
   "random": {
     "success_rate": 0.0,
-    "collision_rate": 0.535,
-    "timeout_rate": 0.46499999999999997,
-    "mean_final_dist": 1.5683242422722423,
-    "mean_len": 153.13,
-    "mean_return": -15.242391657677175,
-    "reached_target_rate": 0.105,
+    "collision_rate": 0.45,
+    "timeout_rate": 0.55,
+    "mean_final_dist": 1.651939733415482,
+    "mean_len": 150.7,
+    "mean_return": -14.493652380695902,
+    "reached_target_rate": 0.1,
     "settle_given_reached": 0.0,
-    "mean_speed_near": 1.6763091718852727,
-    "mean_collision_step": 112.39252336448598,
+    "mean_speed_near": 2.163189103531516,
+    "mean_collision_step": 90.44444444444444,
     "n_episodes": 200
   },
   "v1_sparse": {
@@ -75,6 +75,19 @@
     "settle_given_reached": 0.0,
     "mean_speed_near": 0.10570651351409334,
     "mean_collision_step": 55.56521739130435,
+    "n_episodes": 200
+  },
+  "v6_goalfocus": {
+    "success_rate": 0.0,
+    "collision_rate": 0.14,
+    "timeout_rate": 0.86,
+    "mean_final_dist": 0.4399449546178933,
+    "mean_len": 176.44,
+    "mean_return": 16.363114533252578,
+    "reached_target_rate": 0.455,
+    "settle_given_reached": 0.0,
+    "mean_speed_near": 0.09844018021805964,
+    "mean_collision_step": 31.714285714285715,
     "n_episodes": 200
   },
   "final_multiseed": {
