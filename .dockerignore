@@ -5,6 +5,18 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-artifacts/sweep_*
-artifacts/probe_*
 tests/
+deploy/
+
+# Training logs are ~32 MB of per-episode CSV the image never reads.
+artifacts/logs/
+
+# Ship only the models the showcase actually loads. The sweep arms, the probe
+# runs, the 8M comparison run and the other four final seeds are all part of the
+# write-up, not the app, and together they are ~50 MB of dead weight.
+artifacts/*
+!artifacts/final_v6_goalfocus_seed0.zip
+!artifacts/final_v6_goalfocus_seed0_ckpt200000.zip
+!artifacts/final_v6_goalfocus_seed0_ckpt2000000.zip
+!artifacts/v2_distance_seed0.zip
+!artifacts/v4_potential_seed0.zip
