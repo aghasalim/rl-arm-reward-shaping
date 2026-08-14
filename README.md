@@ -4,6 +4,9 @@
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+**[▶ Live demo](https://rl-arm-reward-shaping.streamlit.app/)** — the two exploits
+on video, the reward-shaping timeline, and the per-seed spread.
+
 A reinforcement learning project by a third-year Applied Computer Science (AI)
 student. I built the environment from scratch, wrote five reward functions, and
 the agent cheated two of them in ways I did not see coming.

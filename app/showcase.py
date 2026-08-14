@@ -27,7 +27,7 @@ st.title("Teaching an arm to stop, not just arrive")
 st.caption(
     "A 2-link torque-controlled arm must put its end effector within 5 cm of a "
     "target, hold still there for 10 steps, and not hit an obstacle — in 200 steps. "
-    "Five reward functions, two of which the agent exploited."
+    "Six reward functions, two of which the agent exploited."
 )
 
 results_path = ROOT / "reports" / "results.json"
@@ -40,7 +40,11 @@ if "final_multiseed" in results:
               f"±{ms['std']['success_rate']:.1%} over {ms['n_seeds']} seeds")
     c2.metric("Collision rate", f"{ms['mean']['collision_rate']:.1%}")
     c3.metric("Final distance", f"{ms['mean']['mean_final_dist']:.3f} m")
-    c4.metric("PD oracle reference", "52.0%", "hand-written controller")
+    # 73.5% is the oracle in the *current* environment (MAX_TORQUE=8). 52.0% was
+    # its score back when the arm was under-actuated at MAX_TORQUE=2, and quoting
+    # that here would flatter the agent by comparing it against a crippled
+    # reference. Reproduce with `make oracle`.
+    c4.metric("PD oracle reference", "73.5%", "hand-written controller")
 
 tab1, tab2, tab3 = st.tabs(["The two exploits", "Training", "Reward versions"])
 
