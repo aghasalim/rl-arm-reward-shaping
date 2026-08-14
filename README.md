@@ -1,6 +1,7 @@
 # Teaching an arm to stop, not just arrive
 
 [![ci](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml)
+[![demo-link](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/demo.yml/badge.svg)](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/demo.yml)
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -8,7 +9,7 @@
 on video, the reward-shaping timeline, and the per-seed spread.
 
 A reinforcement learning project by a third-year Applied Computer Science (AI)
-student. I built the environment from scratch, wrote five reward functions, and
+student. I built the environment from scratch, wrote six reward functions, and
 the agent cheated two of them in ways I did not see coming.
 
 **This README leads with the things that went wrong, because those are the part
