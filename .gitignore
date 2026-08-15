@@ -17,3 +17,5 @@ artifacts/*
 !artifacts/final_v6_goalfocus_seed0_ckpt2000000.zip
 !artifacts/v2_distance_seed0.zip
 !artifacts/v4_potential_seed0.zip
+.env
+.env.local
