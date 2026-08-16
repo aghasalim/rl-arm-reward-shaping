@@ -11,3 +11,6 @@ imageio-ffmpeg>=0.4
 matplotlib>=3.8
 pandas>=2.1
 streamlit>=1.36
+# Imported directly in src/ (arrays, RNG), so it is declared rather than
+# relied on arriving transitively via another package's pin.
+numpy>=1.26
