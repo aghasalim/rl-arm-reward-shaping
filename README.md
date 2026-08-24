@@ -22,7 +22,42 @@ The full working log is in **[NOTES.md](NOTES.md)**.
 
 ---
 
-## The task
+
+---
+
+## Abstract
+
+A 2-link arm has to reach a target and stay there. Six reward functions were
+written for it, and the agent exploited two of them in ways that were not
+anticipated: the distance reward made it drive into the obstacle on purpose,
+because a collision ends the episode and stops the accumulating distance penalty,
+and the potential-based reward made it drift near the target and park, because
+parking is worth more than the risk of overshooting.
+
+Every policy is scored on the same fixed criterion over the same 200 held-out
+layouts, disjoint from training, with deterministic actions. Training reward is
+never compared across versions, because v2 and v4 are not in the same units.
+
+The final agent succeeds on 43.2% ± 5.8% of episodes over five seeds. A
+hand-written PD controller succeeds on 73.5%, which is stated rather than omitted.
+The one axis on which the learned policy earns its existence is collisions: 17.3%
+against the oracle's 25.5%, because a PD controller tracking an inverse-kinematics
+solution drives straight through obstacles and the policy learned to go around.
+
+Two results are reported that a tuning write-up would normally suppress. At 1.2M
+steps the best reward still scores 0% success while reaching the target three
+times more often than any earlier version — the reward change and the training
+budget both had to be right, and either alone reads as failure. And training
+longer made it worse, on identical code and seeds.
+
+**Contributions.** (i) Two reward exploits documented with video, including the
+mechanism. (ii) A fixed held-out evaluation criterion applied across all six
+rewards. (iii) A non-learned oracle baseline that beats the agent, reported.
+(iv) A negative result on training budget.
+
+---
+
+## 1. The task
 
 A two-link torque-controlled arm (planar, viewed from above, so no gravity) has
 to put its end effector on a randomly placed target and **hold it there**, while
@@ -39,7 +74,7 @@ reward functions start getting exploited.
 
 ---
 
-## The two exploits
+## 2. The two exploits
 
 ### 1. The agent killed itself to stop the bleeding
 
@@ -107,7 +142,7 @@ do this.*
 
 ---
 
-## The bug that wasn't a reward bug
+## 3. The bug that wasn't a reward bug
 
 After fixing both exploits the agent still solved nothing. Before shaping
 anything further I wrote a **PD controller with exact inverse kinematics** — no
@@ -129,7 +164,7 @@ physically impossible episodes with reward functions.
 
 ---
 
-## Results
+## 4. Results
 
 ### The final agent, at three points in training
 
@@ -201,7 +236,7 @@ diagnose it further, and it is the loose end I would pull on first.
 
 ---
 
-## Honest limitations
+## 5. Limitations
 
 **The agent loses to a controller I wrote in an afternoon.** 43.2% against 73.5%.
 It wins only on collisions (17.3% vs 25.5%). If the task were reaching alone,
@@ -228,7 +263,7 @@ are real, but a custom environment cannot tell you how a method generalises.
 
 ---
 
-## Running it
+## 6. Running it
 
 ```bash
 make setup && make test
@@ -267,7 +302,7 @@ the five models the showcase actually loads — the sweep arms, probe runs and t
 
 ---
 
-## How it's built
+## 7. Method
 
 **Environment** — `src/rlarm/env.py`. Standard rigid-body manipulator dynamics
 (Spong ch. 7) with the closed-form 2-link mass matrix, integrated with RK4.
@@ -307,7 +342,7 @@ tests/          physics and env-contract tests
 
 ---
 
-## What I'd do next
+## 8. What I'd do next
 
 In rough order of how much I think each would pay off:
 
