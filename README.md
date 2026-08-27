@@ -164,6 +164,15 @@ tests/          physics and env-contract tests
 The 3M vs 8M collapse is the loose end I would pull on first. I would not tune the
 reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
 
+## References
+
+The papers and sources this implementation follows. Each one is here because
+the code uses the method, the dataset or the metric it describes.
+
+- **Schulman, Wolski, Dhariwal, Radford, Klimov. Proximal Policy Optimization Algorithms. 2017.** [arXiv:1707.06347](https://arxiv.org/abs/1707.06347) the algorithm used.
+- **Ng, Harada, Russell. Policy Invariance Under Reward Transformations. ICML 1999.** potential based shaping, and the condition under which shaping does not change the optimal policy.
+- **Raffin, Hill, Gleave et al. Stable-Baselines3: Reliable Reinforcement Learning Implementations. JMLR 22, 2021.** the PPO implementation.
+
 ## Author and licence
 
 Aghasalim Mustafazada. MIT, see [LICENSE](LICENSE).
