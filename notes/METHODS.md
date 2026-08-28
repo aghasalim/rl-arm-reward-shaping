@@ -181,7 +181,7 @@ there would be no case for RL here at all.
 **Seed variance is large enough to swamp most comparisons.** The five final seeds
 scored 36.0%, 40.0%, 41.0%, 46.0% and 53.0%. Any single-run improvement smaller
 than about 15 points is indistinguishable from picking a lucky seed, which is
-exactly why every sweep table in [NOTES.md](NOTES.md) is labelled as suggestive
+exactly why every sweep table in [NOTES.md](../NOTES.md) is labelled as suggestive
 rather than measured, those were run one seed at a time, before I understood how
 wide the spread was.
 
@@ -274,7 +274,7 @@ below, and compare it against a hand-written controller that beats it. What I
 can defend is every number here, how it was measured, and why the reward
 function ended up the shape it did.
 
-The full working log is in **[NOTES.md](NOTES.md)**.
+The full working log is in **[NOTES.md](../NOTES.md)**.
 
 *v2. The arm makes straight for the red circle. Episodes are over in ~30 steps.*
 
