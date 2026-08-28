@@ -108,9 +108,9 @@ Same code, same five seeds, only `--timesteps` changed:
 
 ![the 8M run peaks and then slides back](reports/figures/longer_training.gif)
 
-*The two runs drawn as training goes on, five seeds each: the curves are
-what move, the reward and the seeds are held fixed, only `--timesteps`
-changed.*
+*Both runs as they train, five seeds each. The 8M run reaches roughly where
+the 3M run finishes and then slides back down to 18.0%, which is the part a
+final number alone would hide.*
 
 2.7× the compute for less than half the performance. The learning rate decays
 linearly over the run, so the 8M run is not "the 3M run continued".
