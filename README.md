@@ -106,6 +106,12 @@ Same code, same five seeds, only `--timesteps` changed:
 | 3M | **43.2% ± 5.8%** |
 | 8M | **18.0% ± 6.6%** |
 
+![the 8M run peaks and then slides back](reports/figures/longer_training.gif)
+
+*The two runs drawn as training goes on, five seeds each: the curves are
+what move, the reward and the seeds are held fixed, only `--timesteps`
+changed.*
+
 2.7× the compute for less than half the performance. The learning rate decays
 linearly over the run, so the 8M run is not "the 3M run continued".
 [Caveat](notes/METHODS.md#training-longer-made-it-worse).
