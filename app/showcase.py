@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 FIG = ROOT / "reports" / "figures"
 ART = ROOT / "artifacts"
 
-st.set_page_config(page_title="RL reward shaping — 2-link arm", layout="wide")
+st.set_page_config(page_title="RL reward shaping, 2-link arm", layout="wide")
 
 
 def show_gif(name: str, caption: str) -> None:
@@ -20,13 +20,13 @@ def show_gif(name: str, caption: str) -> None:
     if p.exists():
         st.image(str(p), caption=caption, use_container_width=True)
     else:
-        st.info(f"`{p.name}` not generated yet — run `make videos`.")
+        st.info(f"`{p.name}` not generated yet, run `make videos`.")
 
 
 st.title("Teaching an arm to stop, not just arrive")
 st.caption(
     "A 2-link torque-controlled arm must put its end effector within 5 cm of a "
-    "target, hold still there for 10 steps, and not hit an obstacle — in 200 steps. "
+    "target, hold still there for 10 steps, and not hit an obstacle, in 200 steps. "
     "Six reward functions, two of which the agent exploited."
 )
 
@@ -49,7 +49,7 @@ if "final_multiseed" in results:
 tab1, tab2, tab3 = st.tabs(["The two exploits", "Training", "Reward versions"])
 
 with tab1:
-    st.subheader("Exploit 1 — deliberate self-termination")
+    st.subheader("Exploit 1, deliberate self-termination")
     st.markdown(
         "`v2` paid `-distance` every step and never penalised collision. Crashing "
         "ends the episode, and ending the episode stops the bleeding. The agent "
@@ -59,28 +59,31 @@ with tab1:
     )
     show_gif("v2_suicide", "v2: the arm drives straight into the obstacle on purpose")
 
-    st.subheader("Exploit 2 — farming the shaping drift")
+    st.subheader("Exploit 2, farming the shaping drift")
     st.markdown(
         "`v4` used textbook potential-based shaping, `F = γΦ(s') − Φ(s)` with "
         "`Φ = −distance`. For a *stationary* agent this pays `(1−γ)·distance` every "
-        "single step — **+20 per episode at 2 m, exactly the success bonus, at zero "
-        "risk** — and it pays *more* the further away you loiter. The policy "
+        "single step, **+20 per episode at 2 m, exactly the success bonus, at zero "
+        "risk**, and it pays *more* the further away you loiter. The policy "
         "invariance theorem assumes an infinite horizon; under a 200-step cutoff "
         "the drift is just income. The agent parked at 1.4 m and collected it."
     )
-    show_gif("v4_freeze", "v4: the arm drifts, then loiters — it is being paid to do this")
+    show_gif("v4_freeze", "v4: the arm drifts, then loiters, it is being paid to do this")
 
 with tab2:
     st.subheader("Early vs late")
     a, b, c = st.columns(3)
     with a:
-        show_gif("random", "Random policy — 0% success")
+        show_gif("random", "Random policy, 0% success")
     with b:
         show_gif("final_early", "Early in training")
     with c:
         show_gif("final_late", "Final policy")
-    for img, cap in [("reward_shaping_comparison.png", "Task success across reward versions"),
-                     ("multiseed.png", "Per-seed spread on the final reward")]:
+    for img, cap in [("reward_shaping_comparison.png",
+                      "Distance, collisions and episode length across the six reward versions"),
+                     ("multiseed.png", "Per-seed spread on the final reward"),
+                     ("longer_training.gif",
+                      "The same reward at 3M and 8M steps, five seeds each")]:
         p = FIG / img
         if p.exists():
             st.image(str(p), caption=cap, use_container_width=True)

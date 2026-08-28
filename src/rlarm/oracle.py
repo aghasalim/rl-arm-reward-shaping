@@ -6,7 +6,7 @@ has exact inverse kinematics, so it already knows the answer; if it still cannot
 satisfy the criterion, the environment is under-actuated and no reward function
 will save it.
 
-It ignores the obstacle entirely, which is deliberate -- that is the gap the
+It ignores the obstacle entirely, which is deliberate, that is the gap the
 learned policy has to justify itself against.
 
 Run: python -m src.rlarm.oracle

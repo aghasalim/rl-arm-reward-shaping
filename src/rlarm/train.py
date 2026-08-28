@@ -6,7 +6,7 @@ workers make it slower rather than faster. Measured before choosing.
 
 No VecNormalize. Observations are already bounded and O(1) by construction (trig
 encoding, normalized velocities), and normalizing the reward would rescale each
-reward version differently -- precisely the confound this project is trying to
+reward version differently, precisely the confound this project is trying to
 avoid. It also removes the classic failure of shipping a model without its
 saved normalization statistics.
 """

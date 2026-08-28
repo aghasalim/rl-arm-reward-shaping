@@ -43,7 +43,7 @@ def _run(item):
     train("v5_progress", seed=0, timesteps=TIMESTEPS, tag=f"sweep_{name}", env_kwargs=kw)
     model = PPO.load(f"artifacts/sweep_{name}_seed0.zip", device="cpu")
     # Always evaluated WITH the obstacle and the standard criterion, including
-    # arm B -- a policy that ignores obstacles must be scored against them.
+    # arm B: a policy that ignores obstacles must be scored against them.
     m = evaluate(model, n_episodes=150, reward_version="v5_progress")
     m["arm"] = name
     m["config"] = kw

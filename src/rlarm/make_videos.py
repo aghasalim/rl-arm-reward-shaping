@@ -1,7 +1,7 @@
 """Render the GIFs the showcase and README use.
 
 Every clip uses the same three evaluation seeds, so "early vs late" and
-"exploit vs fix" are genuinely like-for-like -- a later checkpoint cannot look
+"exploit vs fix" are genuinely like-for-like, a later checkpoint cannot look
 better merely by drawing easier targets.
 """
 from __future__ import annotations

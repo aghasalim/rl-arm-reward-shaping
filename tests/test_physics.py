@@ -1,7 +1,7 @@
 """Physics and environment-contract checks.
 
 The energy test is the important one. An integrator that quietly injects energy
-turns the task into a different problem -- the agent learns to pump the
+turns the task into a different problem, the agent learns to pump the
 integrator instead of controlling the arm, and nothing about the reward curve
 would reveal it. This test fails under semi-implicit Euler at dt=0.02, which is
 why the environment uses RK4.
@@ -28,7 +28,7 @@ def test_unforced_arm_conserves_energy():
         for _ in range(500):
             e._integrate(np.zeros(2))
         drift = abs(E.kinetic_energy(e.state) - e0) / e0
-        assert drift < 1e-3, f"energy drifted {drift:.2%} -- integrator is injecting energy"
+        assert drift < 1e-3, f"energy drifted {drift:.2%}, integrator is injecting energy"
     finally:
         E.DAMPING = old_damping
 

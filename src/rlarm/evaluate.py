@@ -1,7 +1,7 @@
 """Version-independent evaluation.
 
 The whole point of this project is comparing reward functions, which makes
-training reward useless as a comparison metric -- v2 and v4 are not even
+training reward useless as a comparison metric, v2 and v4 are not even
 measured in the same units, and "v4 scores higher" would be meaningless. So
 every policy is judged against one fixed, external criterion defined before any
 training happened:

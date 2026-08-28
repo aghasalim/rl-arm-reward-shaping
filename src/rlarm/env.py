@@ -1,4 +1,4 @@
-"""ReachAvoid-v0 -- a planar two-link arm that must reach a target and *stop* there
+"""ReachAvoid-v0, a planar two-link arm that must reach a target and *stop* there
 without hitting an obstacle.
 
 Why a custom environment
@@ -133,7 +133,7 @@ class ReachAvoidEnv(gym.Env):
         """shaping_weight / collision_penalty / use_obstacle are exposed because
         they are what the v5 balance sweep varies (see NOTES.md). use_obstacle=False
         is the diagnostic that separates "cannot reach" from "will not risk the
-        obstacle" -- without it those two failures look identical from outside."""
+        obstacle", without it those two failures look identical from outside."""
         if reward_version not in REWARD_VERSIONS:
             raise ValueError(f"reward_version must be one of {REWARD_VERSIONS}")
         self.reward_version = reward_version
@@ -148,7 +148,7 @@ class ReachAvoidEnv(gym.Env):
         # Raised from 0.01 after measuring 73% timeouts: at 0.01 the whole
         # episode's time cost (-2) was noise against ~+15 of shaping, so there
         # was no pressure to actually finish. The collision penalty has to stay
-        # well above the total time cost or exploit #1 returns -- at 0.03 the
+        # well above the total time cost or exploit #1 returns: at 0.03 the
         # worst case for surviving is -6, against a -20 collision.
         self.time_cost = time_cost
         # Weight on a sqrt(dist) term in the potential. A purely linear -dist
@@ -175,7 +175,7 @@ class ReachAvoidEnv(gym.Env):
         self._prev_dist = 0.0
         self._prev_pot = 0.0
 
-    # -- setup -------------------------------------------------------------
+    #: setup -------------------------------------------------------------
     def _sample_task(self) -> None:
         """Place obstacle and target so the episode is solvable.
 
@@ -216,7 +216,7 @@ class ReachAvoidEnv(gym.Env):
         self._prev_pot = self._potential(self._prev_dist, 0.0)
         return self._obs(), {}
 
-    # -- helpers -----------------------------------------------------------
+    #: helpers -----------------------------------------------------------
     def _ee(self) -> np.ndarray:
         return forward_kinematics(self.state[0], self.state[1])[1]
 
@@ -259,7 +259,7 @@ class ReachAvoidEnv(gym.Env):
             dtype=np.float32,
         )
 
-    # -- dynamics ----------------------------------------------------------
+    #: dynamics ----------------------------------------------------------
     def _integrate(self, tau: np.ndarray) -> None:
         h = DT / SUBSTEPS
         s = self.state.astype(np.float64)
@@ -295,7 +295,7 @@ class ReachAvoidEnv(gym.Env):
         }
         return self._obs(), float(reward), terminated, truncated, info
 
-    # -- reward ------------------------------------------------------------
+    #: reward ------------------------------------------------------------
     def _reward(self, dist, tau, collided, success) -> float:
         """The four versions are kept side by side on purpose: NOTES.md refers to
         them by name, and being able to re-run any earlier one is what makes the
@@ -319,7 +319,7 @@ class ReachAvoidEnv(gym.Env):
 
         if v == "v4_potential":
             # Potential-based shaping (Ng, Harada & Russell 1999), Φ = -dist.
-            # This version is KEPT BROKEN on purpose -- it is exploit #2 in
+            # This version is KEPT BROKEN on purpose: it is exploit #2 in
             # NOTES.md. F = γΦ(s') - Φ(s) pays a *stationary* agent
             # (1-γ)·dist every step: +20 per episode at 2 m, exactly the success
             # bonus, for standing still at zero collision risk. The policy
@@ -349,7 +349,7 @@ class ReachAvoidEnv(gym.Env):
         shaping = self.shaping_weight * (pot - self._prev_pot)
         self._prev_pot = pot
         # Normalised by MAX_TORQUE² so the effort term keeps the same weight if
-        # the actuator limit changes -- otherwise raising torque silently turns a
+        # the actuator limit changes: otherwise raising torque silently turns a
         # rounding-error penalty into the dominant term.
         effort = 0.002 * float(tau @ tau) / (self.max_torque ** 2)
         r = shaping - effort - self.time_cost
@@ -370,7 +370,7 @@ class ReachAvoidEnv(gym.Env):
             r += 50.0
         return r
 
-    # -- rendering ---------------------------------------------------------
+    #: rendering ---------------------------------------------------------
     def render(self):
         if self.render_mode != "rgb_array":
             return None
