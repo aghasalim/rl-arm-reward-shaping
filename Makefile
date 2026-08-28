@@ -24,11 +24,18 @@ shaping:
 	done; wait
 
 # Final policy: 5 seeds, reported with spread.
-final:
+final:            ## the reported agent: v6 goal-focus, 3M steps, five seeds
 	@for s in 0 1 2 3 4; do \
-		OMP_NUM_THREADS=2 $(PY) -m src.rlarm.train --reward-version v5_progress \
-			--seed $$s --timesteps 8000000 --checkpoints 200000 2000000 \
-			--tag final_v5_progress & \
+		OMP_NUM_THREADS=2 $(PY) -m src.rlarm.train --reward-version v6_goalfocus \
+			--seed $$s --timesteps 3000000 --checkpoints 200000 2000000 \
+			--tag final_v6_goalfocus & \
+	done; wait
+
+long8m:           ## the same agent run out to 8M, which is the comparison that got worse
+	@for s in 0 1 2 3 4; do \
+		OMP_NUM_THREADS=2 $(PY) -m src.rlarm.train --reward-version v6_goalfocus \
+			--seed $$s --timesteps 8000000 --checkpoints 200000 2000000 3000000 \
+			--tag long8m & \
 	done; wait
 
 eval:
