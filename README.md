@@ -43,7 +43,7 @@ was no deterrent against a `-100` alternative.
 *v2. The arm makes straight for the red circle, in ~30 steps.*
 
 **v4, potential-based shaping**, from Ng, Harada & Russell (1999): `F = γΦ(s′) −
-Φ(s)` with `Φ = −distance`. Collisions dropped to ~7% and the arm stopped moving,
+Φ(s) ` with ` Φ = −distance `. Collisions dropped to ~7% and the arm stopped moving,
 92.5% of episodes timed out, because a stationary agent earns `(1 − γ)·d` per step
 and loitering at 2 m pays `+20.0` an episode, exactly the success bonus. Policy
 invariance assumes an infinite horizon; under a 200-step cutoff that term is

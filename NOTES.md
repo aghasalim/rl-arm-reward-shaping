@@ -24,7 +24,7 @@ A random policy scores **0% success** with a mean final distance of ~1.6 m. That
 
 ## Exploit #1, the agent kills itself to stop the bleeding
 
-`v2` pays`-distance` every step and never penalises collision. Colliding
+`v2` pays `-distance` every step and never penalises collision. Colliding
 **terminates the episode**, and terminating stops the cost accruing.
 
 The agent found this completely, **100% of evaluation episodes end in a
@@ -33,7 +33,7 @@ is not stumbling into the obstacle. It is steering into it, far earlier than
 chance.
 
 `v3` is the interesting failure, because it is what I actually wrote next. I
-added a`-5` collision penalty and assumed that settled it. Nothing changed
+added a `-5` collision penalty and assumed that settled it. Nothing changed
 still 100% collision. The arithmetic I had never done:
 
 ```
@@ -41,7 +41,7 @@ survive to the step limit ≈ 200 × (−dist − 0.05) ≈ −100 or worse
 crash immediately                                =   −5
 ```
 
-A`-5` penalty against a`-100` alternative is not a deterrent, it is a discount.
+A `-5` penalty against a `-100` alternative is not a deterrent, it is a discount.
 **A termination penalty has to beat the worst case of staying alive.** Every
 later version sets it by doing that subtraction explicitly.
 
@@ -50,13 +50,13 @@ later version sets it by doing that subtraction explicitly.
 ## Exploit #2, farming the drift in "provably safe" shaping
 
 `v4` was meant to be the principled fix: potential-based shaping (Ng, Harada &
-Russell 1999),`F = γΦ(s′) − Φ(s)` with`Φ = −distance`. There is a theorem
+Russell 1999), `F = γΦ(s′) − Φ(s)` with `Φ = −distance`. There is a theorem
 saying this cannot change the optimal policy. Collisions duly collapsed.
 
 And the arm stopped doing anything, over 90% of episodes timed out, with a final
 distance *worse than random*.
 
-For a **stationary** agent,`Φ(s′) = Φ(s) = −d`, so
+For a **stationary** agent, `Φ(s′) = Φ(s) = −d`, so
 
 ```
 F = γ(−d) − (−d) = (1 − γ)·d       > 0
@@ -71,7 +71,7 @@ Positive income for standing still, and **larger the further away you stand**. A
 | 1.5 m | +0.075 | +15.0 |
 | 2.0 m | +0.100 | **+20.0** |
 
-The success bonus was`+20`. **Loitering at 2 m paid exactly as much as solving
+The success bonus was `+20`. **Loitering at 2 m paid exactly as much as solving
 the task, at zero collision risk.** An episode trace confirmed it exactly: 200
 steps, return **+19.2**, the arm drifts from 1.80 m to 1.39 m and parks there.
 It was not failing to learn. It learned precisely what I was paying for.
@@ -109,7 +109,7 @@ under-actuated: peak joint acceleration ~0.8 rad/s², so a large reorientation
 could not be completed *and stopped* within 4 seconds. I had spent hours trying
 to fix physically impossible episodes with reward functions.
 
-Raising`MAX_TORQUE` to 8.0 took the oracle to 97%, and the learned policy from
+Raising `MAX_TORQUE` to 8.0 took the oracle to 97%, and the learned policy from
 2% to 12% on an unchanged reward.
 
 **An oracle tells you whether the task is solvable. A reward curve never will.**
@@ -174,19 +174,19 @@ both:                        0.8% of steps
 
 **Distance was the binding constraint, not velocity.** I had spent the entire
 velocity-weight sweep tuning the wrong half of the criterion. The diagnostics
-that made this visible (`reached_target_rate`,`settle_given_reached`) were
+that made this visible (`reached_target_rate`, `settle_given_reached`) were
 already in the evaluator; I had just been reading the success rate.
 
-The cause is that a linear`Φ = −dist` pays the same per metre for the last 5 cm
+The cause is that a linear `Φ = −dist` pays the same per metre for the last 5 cm
 as for the first, so there is almost no gradient left where precision matters.
-Adding a`sqrt(dist)` term fixes exactly that`d/dx √x → ∞` as`x → 0`, so the
+Adding a `sqrt(dist)` term fixes exactly that `d/dx √x → ∞` as `x → 0`, so the
 final centimetres become worth several times more, and because it is still a
 potential with γ=1 it telescopes and cannot be farmed.
 
 | reward | steps | seeds | success |
 |---|---|---|---|
-| v5, linear`Φ = −dist` | 8M | 5 | **8.4% ± 4.9%** |
-| v6,`Φ = −(dist + √dist)` | 3M | 3 | **44.7% ± 5.9%** |
+| v5, linear `Φ = −dist` | 8M | 5 | **8.4% ± 4.9%** |
+| v6, `Φ = −(dist + √dist)` | 3M | 3 | **44.7% ± 5.9%** |
 
 A 5× improvement from one term, at less than half the compute. The lesson I
 actually take from this project: **the shape of the potential near the goal
@@ -215,7 +215,7 @@ which is the one thing a PD controller tracking an IK solution cannot do.
 
 ### Training longer made it substantially worse
 
-Identical code, identical five seeds, only`--timesteps` changed:
+Identical code, identical five seeds, only `--timesteps` changed:
 
 | steps | success (5 seeds) |
 |---|---|
@@ -224,7 +224,7 @@ Identical code, identical five seeds, only`--timesteps` changed:
 
 This is the same phenomenon as the 12.0%-at-2M / 6.0%-at-4M result earlier, which
 I had written off as single-seed noise. With five seeds either side it is not
-noise. I verified`env.py` and`train.py` were untouched between the two runs
+noise. I verified `env.py` and `train.py` were untouched between the two runs
 (both last modified 04:31, both runs launched after).
 
 The one confound I cannot remove without more runs: the learning rate decays
@@ -246,7 +246,7 @@ from one seed per configuration. I have direct evidence that this is not enough:
 the identical configuration scored **12.0% at 2M steps and 6.0% at 4M steps**: more training, worse policy, same seed, same everything. That is either a genuine
 late-training collapse or ordinary PPO variance, and with one seed I cannot tell
 which. Differences between adjacent sweep rows should be read as suggestive, not
-measured. I kept them because the *direction* of the`vel_weight` trend is
+measured. I kept them because the *direction* of the `vel_weight` trend is
 consistent across four values, and because hiding weak evidence would
 misrepresent how the configuration was chosen.
 

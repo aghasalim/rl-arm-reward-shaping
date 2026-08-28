@@ -59,7 +59,7 @@ reward functions start getting exploited.
 
 ### 1. The agent killed itself to stop the bleeding
 
-Reward v2 paid`-distance` every step, and never penalised hitting the obstacle.
+Reward v2 paid `-distance` every step, and never penalised hitting the obstacle.
 Collision **ends the episode**: and ending the episode stops the cost accruing.
 
 The agent found this in **200 out of 200** evaluation episodes. It collides at
@@ -67,7 +67,7 @@ step ~30, where a random policy survives past step 100. It isn't stumbling into
 the obstacle; it's steering into it, far earlier than chance.
 
 What makes this my favourite failure is v3, which is what I actually wrote next.
-I added a`-5` collision penalty, assumed that was that, and it changed nothing
+I added a `-5` collision penalty, assumed that was that, and it changed nothing
 still 100% collision. The arithmetic I had never done:
 
 ```
@@ -75,20 +75,20 @@ survive to the step limit ≈ 200 × (−dist − 0.05) ≈ −100 or worse
 crash immediately                                =   −5
 ```
 
-A`-5` penalty against a`-100` alternative isn't a deterrent, it's a discount.
+A `-5` penalty against a `-100` alternative isn't a deterrent, it's a discount.
 **A penalty has to beat the worst case of staying alive.**
 
 
 ### 2. The agent farmed my "provably safe" shaping
 
 v4 was meant to be the principled fix: potential-based shaping from Ng, Harada &
-Russell (1999),`F = γΦ(s′) − Φ(s)` with`Φ = −distance`. There's a theorem
+Russell (1999), `F = γΦ(s′) − Φ(s)` with `Φ = −distance`. There's a theorem
 saying this cannot change the optimal policy. Collisions duly dropped to ~7%.
 
 And the arm stopped doing anything at all, 92.5% of episodes timed out, final
 distance *worse than a random policy*.
 
-For a **stationary** agent,`Φ(s′) = Φ(s) = −d`, so
+For a **stationary** agent, `Φ(s′) = Φ(s) = −d`, so
 
 ```
 F = γ(−d) − (−d) = (1 − γ)·d       > 0
@@ -103,14 +103,14 @@ stand**. At γ=0.99 and my shaping weight:
 | 1.5 m | +0.075 | +15.0 |
 | 2.0 m | +0.100 | **+20.0** |
 
-The success bonus was`+20`. **Loitering at 2 m paid exactly as much as solving
+The success bonus was `+20`. **Loitering at 2 m paid exactly as much as solving
 the task, at zero risk.** A single episode trace confirmed it: 200 steps, return
 +19.2, the arm drifts to 1.39 m and parks.
 
 The theorem isn't wrong. Its policy invariance assumes an infinite horizon with
 absorbing terminal states; under a 200-step cutoff that drift term stops being
 telescoping bookkeeping and becomes income. Setting **γ=1 in the shaping term
-only** makes it telescope to`w·(Φ_end − Φ_start)` across the episode, so a
+only** makes it telescope to `w·(Φ_end − Φ_start)` across the episode, so a
 stationary agent earns exactly zero. The agent's own discount stays at 0.99.
 
 
@@ -187,8 +187,8 @@ wide the spread was.
 
 **39.5% of episodes still time out.** The dominant remaining failure is not an
 exploit and not a collision: the arm simply does not get there and stop within
-200 steps.`settle_given_reached` of 64% says that once it arrives it usually
-finishes;`reached_target_rate` of 67% says arriving at all is the bottleneck.
+200 steps. `settle_given_reached` of 64% says that once it arrives it usually
+finishes; `reached_target_rate` of 67% says arriving at all is the bottleneck.
 
 **More training made it worse and I don't know why.** See above. I can measure it
 across five seeds; I cannot explain it.
@@ -202,7 +202,7 @@ are real, but a custom environment cannot tell you how a method generalises.
 
 ## 6. Docker image
 
-Built and verified on`linux/arm64`: 1.98 GB, container reports healthy, and the
+Built and verified on `linux/arm64`: 1.98 GB, container reports healthy, and the
 trained policy loads and evaluates from inside the image. The image carries only
 the five models the showcase actually loads, the sweep arms, probe runs and the
 8M comparison seeds are part of the write-up, not the app.
@@ -211,13 +211,13 @@ the five models the showcase actually loads, the sweep arms, probe runs and the
 
 ## 7. Method
 
-**Environment**:`src/rlarm/env.py`. Standard rigid-body manipulator dynamics
+**Environment**: `src/rlarm/env.py`. Standard rigid-body manipulator dynamics
 (Spong ch. 7) with the closed-form 2-link mass matrix, integrated with RK4.
 
 RK4 rather than Euler is not gold-plating. Under semi-implicit Euler at dt=0.02
 the unforced arm *gains* energy, and an agent will happily learn to pump an
 integrator artefact instead of solving the task, with nothing in the reward
-curve to reveal it.`tests/test_physics.py` asserts energy conservation on the
+curve to reveal it. `tests/test_physics.py` asserts energy conservation on the
 unforced arm and fails under Euler.
 
 **Observation (13)**: trig-encoded joint angles (so the policy never sees the
@@ -227,8 +227,8 @@ depends on how many consecutive steps the arm has been settled, and without it
 in the observation the task isn't Markovian, the policy cannot tell whether one
 more settled step ends the episode or whether the counter just reset.
 
-**Algorithm**: PPO from Stable-Baselines3,`[128, 128]` MLP, 8 vectorized envs,
-linear learning-rate decay.`DummyVecEnv` not`SubprocVecEnv`: an env step costs
+**Algorithm**: PPO from Stable-Baselines3, `[128, 128]` MLP, 8 vectorized envs,
+linear learning-rate decay. `DummyVecEnv` not `SubprocVecEnv`: an env step costs
 ~80 µs, below process-IPC overhead, so subprocess workers measure *slower*. No
 `VecNormalize`, normalizing reward would rescale each reward version
 differently, which is exactly the confound this project exists to avoid.
@@ -244,7 +244,7 @@ In rough order of how much I think each would pay off:
    experiment is a constant learning rate at both horizons, which separates
    "longer training hurts" from "the linear decay schedule hurts when stretched".
 2. **Attack the timeout, not the reward.** 39.5% of episodes end with the arm
-   still travelling.`reached_target_rate` says arriving is the bottleneck, not
+   still travelling. `reached_target_rate` says arriving is the bottleneck, not
    settling, so the next gain is in getting there faster, not in more shaping.
    The reward is no longer the limiting factor and I should stop tuning it.
 3. **A second algorithm.** SAC is off-policy and far more sample-efficient on
@@ -286,7 +286,7 @@ do this.*
 Same three task layouts in every clip, so this is like-for-like, a later
 checkpoint cannot look better by drawing easier targets.
 
-Same code, same five seeds, only`--timesteps` changed:
+Same code, same five seeds, only `--timesteps` changed:
 
 ```bash
 make setup && make test
