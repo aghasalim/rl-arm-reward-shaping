@@ -82,7 +82,7 @@ Training reward is never compared across versions. Full table in
 
 | reward | steps | success | collision | timeout | reached target | settled given reached | final dist |
 |---|---|---|---|---|---|---|---|
-| random policy |, | 0.0% | 45.0% | 55.0% | 10.0% | 0.0% | 1.652 m |
+| random policy | - | 0.0% | 45.0% | 55.0% | 10.0% | 0.0% | 1.652 m |
 | v1 sparse | 1.2M | 0.0% | 42.0% | 58.0% | 4.0% | 0.0% | 1.921 m |
 | v2 distance | 1.2M | 0.0% | **100.0%** | 0.0% | 7.0% | 0.0% | 1.832 m |
 | v3 penalties | 1.2M | 0.0% | **100.0%** | 0.0% | 4.0% | 0.0% | 1.691 m |
@@ -90,7 +90,7 @@ Training reward is never compared across versions. Full table in
 | v5 progress | 1.2M | 0.0% | 11.5% | 88.5% | 22.0% | 0.0% | 0.594 m |
 | v6 goal-focus | 1.2M | 0.0% | 14.0% | 86.0% | **45.5%** | 0.0% | 0.440 m |
 | **v6 goal-focus** (5 seeds) | 3M | **43.2% ± 5.8%** | 17.3% | 39.5% | 67.1% | 64.2% | **0.371 m** |
-| *PD oracle (no learning)* |, | *73.5%* | *25.5%* |, |, |, |, |
+| *PD oracle (no learning)* | - | *73.5%* | *25.5%* | - | - | - | - |
 
 Rows 2 to 7 share a 1.2M-step budget. v6 at 1.2M still scores 0% while reaching
 the target three times as often as any earlier version: the reward change and the
