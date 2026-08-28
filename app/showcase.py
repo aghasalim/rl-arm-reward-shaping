@@ -33,6 +33,17 @@ st.caption(
 results_path = ROOT / "reports" / "results.json"
 results = json.loads(results_path.read_text()) if results_path.exists() else {}
 
+
+def stat(version: str, key: str, fmt: str = "{:.0f}") -> str:
+    """Numbers quoted below come from reports/results.json, never typed by hand.
+
+    The third tab renders reports/results.md from the same run, so anything
+    hardcoded here would eventually contradict it two clicks away.
+    """
+    val = results.get(version, {}).get(key)
+    return fmt.format(val) if val is not None else "?"
+
+
 if "final_multiseed" in results:
     ms = results["final_multiseed"]
     c1, c2, c3, c4 = st.columns(4)
@@ -49,12 +60,19 @@ if "final_multiseed" in results:
 tab1, tab2, tab3 = st.tabs(["The two exploits", "Training", "Reward versions"])
 
 with tab1:
+    v2 = results.get("v2_distance", {})
+    v2_crashes = (
+        f"{round(v2['collision_rate'] * v2['n_episodes'])} out of {v2['n_episodes']}"
+        if "collision_rate" in v2 and "n_episodes" in v2 else "? out of ?"
+    )
     st.subheader("Exploit 1, deliberate self-termination")
     st.markdown(
         "`v2` paid `-distance` every step and never penalised collision. Crashing "
         "ends the episode, and ending the episode stops the bleeding. The agent "
-        "found this in **40 out of 40** evaluation episodes, colliding at step ~75 "
-        "where a random policy survives to ~110. `v3` added a `-5` collision "
+        f"found this in **{v2_crashes}** evaluation episodes. It hit the obstacle at "
+        f"step {stat('v2_distance', 'mean_collision_step')} on average. A random "
+        "policy that crashes at all takes until step "
+        f"{stat('random', 'mean_collision_step')}. `v3` added a `-5` collision "
         "penalty, which was still cheaper than surviving, so nothing changed."
     )
     show_gif("v2_suicide", "v2: the arm drives straight into the obstacle on purpose")
@@ -66,7 +84,8 @@ with tab1:
         "single step, **+20 per episode at 2 m, exactly the success bonus, at zero "
         "risk**, and it pays *more* the further away you loiter. The policy "
         "invariance theorem assumes an infinite horizon; under a 200-step cutoff "
-        "the drift is just income. The agent parked at 1.4 m and collected it."
+        "the drift is just income. The agent parked at "
+        f"{stat('v4_potential', 'mean_final_dist', '{:.1f}')} m and collected it."
     )
     show_gif("v4_freeze", "v4: the arm drifts, then loiters, it is being paid to do this")
 
