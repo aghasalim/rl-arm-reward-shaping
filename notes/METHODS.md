@@ -123,7 +123,7 @@ anything further I wrote a **PD controller with exact inverse kinematics**: no
 learning, it already knows the answer, to ask whether my criterion was
 achievable at all.
 
-|`MAX_TORQUE` | oracle success (obstacle) | oracle success (no obstacle) |
+| `MAX_TORQUE` | oracle success (obstacle) | oracle success (no obstacle) |
 |---|---|---|
 | **2.0** (what I had) | 52.0% | **65.0%** |
 | 8.0 | 73.5% | **97.0%** |

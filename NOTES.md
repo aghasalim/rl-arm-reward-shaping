@@ -95,7 +95,7 @@ Instead of shaping further I wrote a **PD controller with exact inverse
 kinematics** as an oracle, no learning, it already knows the answer, to ask
 whether the criterion was achievable at all.
 
-|`MAX_TORQUE` | oracle success (obstacle) | oracle success (no obstacle) |
+| `MAX_TORQUE` | oracle success (obstacle) | oracle success (no obstacle) |
 |---|---|---|
 | **2.0** (what I had) | 52.0% | **65.0%** |
 | 4.0 | 66.0% | 83.5% |
@@ -126,7 +126,7 @@ is what the learned policy has to justify.
 I assumed weighting joint speed in the potential would teach the arm to stop,
 since stopping is the hard half. Swept at 2M steps, everything else fixed:
 
-|`vel_weight` | success | reached target | settled given reached |
+| `vel_weight` | success | reached target | settled given reached |
 |---|---|---|---|
 | 0.0 | 1.3% | **58.7%** | 2.3% |
 | 0.1 | **12.0%** | 50.7% | 23.7% |
