@@ -27,8 +27,11 @@ The success criterion was fixed **before any training** and never adjusted:
 > Within **5 cm** of the target, **both joints under 0.1 rad/s**, held for
 > **10 consecutive steps**, no obstacle contact, inside **200 steps**.
 
-Touching a target is a tutorial exercise; arriving and stopping is where reward
-functions get exploited. [More](notes/METHODS.md#1-the-task).
+The arm is planar and viewed from above, so there is no gravity term, and the
+obstacle is drawn at random along with the target. Each step is 20 ms, so the
+200-step limit gives the arm 4 seconds to travel and settle. Touching a target is
+a tutorial exercise; arriving and stopping is where reward functions get
+exploited. [More](notes/METHODS.md#1-the-task).
 
 ## The two exploits
 
@@ -43,8 +46,8 @@ was no deterrent against a `-100` alternative.
 *v2. The arm makes straight for the red circle, in ~30 steps.*
 
 **v4, potential-based shaping**, from Ng, Harada & Russell (1999): `F = γΦ(s′) −
-Φ(s) ` with ` Φ = −distance `. Collisions dropped to ~7% and the arm stopped moving,
-92.5% of episodes timed out, because a stationary agent earns `(1 − γ)·d` per step
+Φ(s) ` with ` Φ = −distance `. Collisions dropped to 4.0% and the arm stopped moving,
+96.0% of episodes timed out, because a stationary agent earns `(1 − γ)·d` per step
 and loitering at 2 m pays `+20.0` an episode, exactly the success bonus. Policy
 invariance assumes an infinite horizon; under a 200-step cutoff that term is
 income. [Derivation](notes/METHODS.md#2-the-agent-farmed-my-provably-safe-shaping).
@@ -134,14 +137,18 @@ make showcase
 ```
 
 `make oracle` checks the task is solvable before training anything, the habit the
-project is really about. `make final` is 8M steps × 5 seeds, roughly 40 minutes on
-10 CPU cores, CPU only.
+project is really about. `make final` is the reported agent, 3M steps × 5 seeds
+run in parallel on CPU. `make long8m` is the 8M comparison, roughly 40 minutes on
+10 CPU cores.
 
 ```bash
 docker build -t rl-arm-reward-shaping . && docker run -p 8501:8501 rl-arm-reward-shaping
 ```
 
-[What is in the image](notes/METHODS.md#6-docker-image).
+That image was built and verified on `linux/arm64`: 1.98 GB, the container
+reports healthy, and the trained policy loads and evaluates from inside it. It
+ships only the five models the showcase loads, not the sweep arms or the 8M
+comparison seeds. [What is in the image](notes/METHODS.md#6-docker-image).
 
 ## Method
 
@@ -167,8 +174,13 @@ tests/          physics and env-contract tests
 
 ## What I'd do next
 
-The 3M vs 8M collapse is the loose end I would pull on first. I would not tune the
-reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
+The 3M vs 8M collapse is the loose end I would pull on first: success more than
+halved, 43.2% down to 18.0% across five seeds, and I cannot account for it.
+Running both horizons at a constant learning rate would separate "longer training
+hurts" from "the linear decay hurts when it is stretched". Second on the list is
+the timeout, not the reward, because 39.5% of episodes end with the arm still
+travelling, which makes arriving the bottleneck rather than settling. I would not
+tune the reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
 
 ## References
 
