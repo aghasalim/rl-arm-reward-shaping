@@ -143,7 +143,7 @@ skipped.
 
 | language | what it recomputes | from | measured agreement |
 |---|---|---|---|
-| Python `export_golden.py` | re-dumps the three fixtures the others read and compares | `src/rlarm/env.py` | 3762 rows, worst relative difference 0.0e+00 here |
+| Python `export_golden.py` | re-dumps the three fixtures the others read and compares | `src/rlarm/env.py` | 3762 rows, worst relative difference 0.0e+00 here and 5.2e-12 on the runner |
 | SQL `summary.sql` | both tables of `reports/results.md`, including the mean and population sd over the five seeds | `reports/results.json` | 12 of 12 rows rebuilt character for character |
 | C `physics.c` | the manipulator dynamics and the RK4 step, its own 2x2 solve | `golden/physics_trace.csv` | worst state error 2.0e-13 over 1100 integrated steps |
 | Go `gocheck/` | the five-seed mean and sd of all nine metrics, then every cell of the table above against the JSON | `reports/results.json` | worst difference 6.9e-18, all 9 metrics |

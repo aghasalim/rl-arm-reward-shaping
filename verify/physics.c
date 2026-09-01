@@ -158,8 +158,7 @@ static double energy(const double s[4])
 static int column_of(const char *header, const char *name)
 {
     char buf[LINE];
-    strncpy(buf, header, sizeof buf - 1);
-    buf[sizeof buf - 1] = '\0';
+    snprintf(buf, sizeof buf, "%s", header);
     int i = 0;
     for (char *tok = strtok(buf, ",\r\n"); tok; tok = strtok(NULL, ",\r\n"), i++)
         if (strcmp(tok, name) == 0)
@@ -223,8 +222,9 @@ int main(int argc, char **argv)
     while (fgets(line, sizeof line, f)) {
         if (line[0] == '\n' || line[0] == '\0') continue;
         char name[64];
-        strncpy(name, field(line, c[0]), sizeof name - 1);
-        name[sizeof name - 1] = '\0';
+        /* snprintf rather than a bounded copy: gcc rejects the truncating form
+         * under -Wstringop-truncation -Werror, and this one always terminates. */
+        snprintf(name, sizeof name, "%s", field(line, c[0]));
 
         Case *k = NULL;
         for (int i = 0; i < n_cases; i++)
@@ -233,7 +233,7 @@ int main(int argc, char **argv)
             if (n_cases == MAX_CASES) { fprintf(stderr, "too many cases\n"); return 2; }
             k = &cases[n_cases++];
             memset(k, 0, sizeof *k);
-            strncpy(k->name, name, sizeof k->name - 1);
+            snprintf(k->name, sizeof k->name, "%s", name);
             k->damping = atof(field(line, c[1]));
             k->tau[0] = atof(field(line, c[2]));
             k->tau[1] = atof(field(line, c[3]));
