@@ -34,6 +34,9 @@ static const double DT = 0.02;
 static const int SUBSTEPS = 2;
 static const double MAX_VEL = 12.0;
 static const double TOL = 1e-9;
+/* glibc only exposes PI outside strict C99, and this is built with
+ * -std=c99 -Wpedantic -Werror, so carry the constant rather than the guard. */
+static const double PI = 3.14159265358979323846;
 
 static double inertia(double m, double l) { return m * l * l / 12.0; }
 
@@ -50,7 +53,10 @@ static void mass_matrix(double q2, double m[2][2])
 /* 2x2 solve with partial pivoting, which is what LAPACK does underneath
  * numpy.linalg.solve. Cramer's rule would also be correct here and would drift
  * from the Python by a few ulp per step for no reason. */
-static void solve2(const double a[2][2], const double b[2], double x[2])
+/* a is not const: passing a plain double[2][2] to a const double[2][2]
+ * parameter is a constraint violation in C99, which gcc -Wpedantic
+ * rejects, unlike the same thing one level down for double[]. */
+static void solve2(double a[2][2], const double b[2], double x[2])
 {
     double m[2][2] = {{a[0][0], a[0][1]}, {a[1][0], a[1][1]}};
     double r[2] = {b[0], b[1]};
@@ -87,10 +93,10 @@ static void deriv(const double s[4], const double tau[2], double damping, double
 
 static double wrap(double a)
 {
-    double r = fmod(a + M_PI, 2.0 * M_PI);
+    double r = fmod(a + PI, 2.0 * PI);
     if (r < 0.0)
-        r += 2.0 * M_PI;
-    return r - M_PI;
+        r += 2.0 * PI;
+    return r - PI;
 }
 
 static double clampv(double v)

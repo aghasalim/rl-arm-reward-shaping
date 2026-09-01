@@ -36,8 +36,10 @@ run () {
 # --- Python -------------------------------------------------------------
 # The fixtures the other seven read are dumped out of the environment itself.
 # If env.py changes and they are not regenerated, every other check would keep
-# agreeing with a stale copy of the simulator. Regenerate into a scratch
-# directory and require the committed files back, byte for byte.
+# agreeing with a stale copy of the simulator. Dump them again and require the
+# committed files back: every integer exactly, every float to 1e-9 relative,
+# which is the room LAPACK needs to give a different last ulp on another
+# machine.
 py="python3"
 [ -x .venv/bin/python ] && py=".venv/bin/python"
 
@@ -48,13 +50,7 @@ check_python () {
         echo "skipped: $py cannot import gymnasium and numpy"
         return 2
     fi
-    "$py" verify/export_golden.py "$tmp/golden" || return 1
-    if diff -r verify/golden "$tmp/golden"; then
-        echo "verify/golden matches a fresh dump from src/rlarm/env.py, byte for byte"
-        return 0
-    fi
-    echo "verify/golden is stale: regenerate with $py verify/export_golden.py"
-    return 1
+    "$py" verify/export_golden.py --check
 }
 
 run_python () {

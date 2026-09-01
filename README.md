@@ -143,7 +143,7 @@ skipped.
 
 | language | what it recomputes | from | measured agreement |
 |---|---|---|---|
-| Python `export_golden.py` | re-dumps the three fixtures the others read | `src/rlarm/env.py` | byte identical, 3762 rows |
+| Python `export_golden.py` | re-dumps the three fixtures the others read and compares | `src/rlarm/env.py` | 3762 rows, worst relative difference 0.0e+00 here |
 | SQL `summary.sql` | both tables of `reports/results.md`, including the mean and population sd over the five seeds | `reports/results.json` | 12 of 12 rows rebuilt character for character |
 | C `physics.c` | the manipulator dynamics and the RK4 step, its own 2x2 solve | `golden/physics_trace.csv` | worst state error 2.0e-13 over 1100 integrated steps |
 | Go `gocheck/` | the five-seed mean and sd of all nine metrics, then every cell of the table above against the JSON | `reports/results.json` | worst difference 6.9e-18, all 9 metrics |
@@ -151,6 +151,12 @@ skipped.
 | Rust `oracle/` | the whole PD oracle: dynamics, inverse kinematics, the PD law, the segment-to-circle collision test and the success criterion | `golden/oracle_layouts.csv` | all 10 published rates exact, 0 of 2000 episode outcomes disagree |
 | Java `Shaping.java` | the policy invariance theorem the shaping is built on, by value iteration on 2000 random MDPs | nothing, this one is the theory | shaped Q matches `Q - Phi` to 4.97e-14, 0 of 2000 optimal policies moved |
 | JavaScript `reward.js` | all six reward functions, step by step, and the loitering table in NOTES.md | `golden/reward_trace.csv` | exact, 0.0e+00 on all 3318 steps |
+
+One detail about the fixtures. They are compared to 1e-9 relative rather than
+byte for byte, because the layouts go through numpy trigonometry and
+`numpy.linalg.solve`, and LAPACK gives the last ulp differently on the Linux
+runner than on my laptop. Every integer column, which includes all 4000 oracle
+outcome flags, still has to match exactly, and does on both machines.
 
 Four things came out of this that were stated in the write-up but had never been
 run.

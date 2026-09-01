@@ -9,6 +9,7 @@ recompute them without importing any of it:
   oracle_layouts.csv  the 200 held-out task layouts, for both obstacle settings
 
 Regenerate with:  .venv/bin/python verify/export_golden.py [output-dir]
+Check instead:    .venv/bin/python verify/export_golden.py --check
 """
 from __future__ import annotations
 
@@ -25,10 +26,19 @@ from src.rlarm.env import ReachAvoidEnv
 from src.rlarm.evaluate import EVAL_SEED_BASE
 from src.rlarm.oracle import KD, KP, _wrap, inverse_kinematics
 
-# An output directory can be given on the command line, which is how verify.sh
-# regenerates the fixtures into a scratch directory and diffs them against the
-# committed ones without touching the working tree.
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent / "golden"
+GOLDEN = Path(__file__).resolve().parent / "golden"
+# --check compares a fresh dump against the committed fixtures instead of
+# writing, which is how verify.sh notices that env.py has moved and the
+# fixtures the other seven implementations read have not.
+CHECK = "--check" in sys.argv[1:]
+ARGS = [a for a in sys.argv[1:] if not a.startswith("-")]
+OUT = Path(ARGS[0]) if ARGS else GOLDEN
+
+# Not byte equality: the layout coordinates go through numpy trigonometry and
+# numpy.linalg.solve, and LAPACK gives the last ulp differently on a Linux
+# runner than it does on this laptop. Every integer column, which includes every
+# oracle outcome flag, still has to match exactly.
+RTOL = 1e-9
 TORQUES = (2.0, 4.0, 6.0, 8.0, 12.0)  # src/rlarm/oracle.py::torque_sweep
 SUCCESS_SEED_OFFSET = 0  # seed 10000: the PD oracle settles there in 100 steps
 
@@ -188,6 +198,9 @@ def _oracle_episode(use_obstacle: bool, seed: int, max_torque: float) -> tuple[b
 
 
 def _write(path: Path, rows: list[dict]) -> None:
+    if CHECK:
+        _compare(GOLDEN / path.name, rows)
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
@@ -196,7 +209,61 @@ def _write(path: Path, rows: list[dict]) -> None:
     print(f"{path.name:22} {len(rows):6d} rows")
 
 
+FAILURES = []
+
+
+def _compare(path: Path, rows: list[dict]) -> None:
+    """Require the committed fixture to be the file this dump would write."""
+    with path.open(newline="") as f:
+        old = list(csv.DictReader(f))
+    if not old:
+        FAILURES.append(f"{path.name}: empty")
+        return
+    if list(old[0]) != list(rows[0]):
+        FAILURES.append(f"{path.name}: columns are {list(old[0])}, dump has {list(rows[0])}")
+        return
+    if len(old) != len(rows):
+        FAILURES.append(f"{path.name}: {len(old)} rows, dump has {len(rows)}")
+        return
+
+    worst, worst_at, bad = 0.0, "", 0
+    for i, (a, b) in enumerate(zip(old, rows)):
+        for k in a:
+            x, y = a[k], str(b[k])
+            if x == y:
+                continue
+            try:
+                fx, fy = float(x), float(y)
+            except ValueError:
+                bad += 1
+                FAILURES.append(f"{path.name} row {i + 2} {k}: {x} against {y}")
+                continue
+            # An integer column is a count, a seed, a step or an outcome flag,
+            # and none of those are allowed to move at all.
+            if "." not in x and "e" not in x.lower():
+                bad += 1
+                FAILURES.append(f"{path.name} row {i + 2} {k}: {x} against {y}")
+                continue
+            rel = abs(fx - fy) / max(abs(fx), abs(fy), 1e-300)
+            if rel > worst:
+                worst, worst_at = rel, f"row {i + 2} {k}"
+            if rel > RTOL:
+                bad += 1
+                FAILURES.append(f"{path.name} row {i + 2} {k}: {x} against {y}, "
+                                f"relative {rel:.1e}")
+    print(f"{path.name:22} {len(rows):6d} rows, worst relative difference "
+          f"{worst:.1e} ({worst_at or 'none'}), {bad} over {RTOL:.0e}")
+
+
 if __name__ == "__main__":
     export_physics()
     export_reward()
     export_oracle_layouts()
+    if CHECK:
+        if FAILURES:
+            print(f"{len(FAILURES)} fixture cells disagree with a fresh dump:")
+            for line in FAILURES[:20]:
+                print(f"  {line}")
+            print("regenerate with: python verify/export_golden.py")
+            sys.exit(1)
+        print("verify/golden is what src/rlarm/env.py produces today")
