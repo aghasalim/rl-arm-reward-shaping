@@ -26,3 +26,44 @@ jobs:
         # starts injecting energy, which would silently change the task the
         # agent is solving without changing anything visible in a reward curve.
         run: python -m pytest tests/ -q
+
+  # Every published number is recomputed by an implementation that shares no
+  # code with the one that produced it, and this job fails if any two disagree.
+  # The reasoning is in the README, "Everything here is computed twice".
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install R
+        # sqlite3, gcc, go, cargo, java and node are already on the runner.
+        run: command -v Rscript || sudo apt-get install -y --no-install-recommends r-base-core
+      - name: Install
+        # Only what the environment itself imports. The checks deliberately do
+        # not go near torch or stable-baselines3.
+        run: pip install "gymnasium>=0.29" "numpy>=1.26"
+      - name: Verify
+        # A skipped check is a missing toolchain, which on the runner means the
+        # job is quietly testing less than it says it is, so require zero.
+        run: |
+          set -o pipefail
+          ./verify/verify.sh | tee /tmp/verify.log
+          grep -q ', 0 skipped' /tmp/verify.log
+      - name: The checks have to be able to fail
+        # A check that passes on corrupted input is checking nothing. Move one
+        # published rate, require rejection, put it back, require a pass.
+        run: |
+          cp reports/results.json /tmp/results.json
+          grep -c '"success_rate": 0.53,' reports/results.json
+          sed -i 's/"success_rate": 0.53,/"success_rate": 0.55,/' reports/results.json
+          if ./verify/verify.sh > /tmp/corrupt.log 2>&1; then
+            echo "verify.sh passed on a corrupted reports/results.json"
+            cat /tmp/corrupt.log
+            exit 1
+          fi
+          echo "rejected the corrupted file, as it should"
+          cp /tmp/results.json reports/results.json
+          ./verify/verify.sh

@@ -1,4 +1,4 @@
-.PHONY: setup test oracle shaping final eval plots videos showcase docker clean all
+.PHONY: setup test verify oracle shaping final eval plots videos showcase docker clean all
 
 PY := .venv/bin/python
 PIP := .venv/bin/pip
@@ -10,6 +10,11 @@ setup:
 
 test:
 	$(PY) -m pytest tests/ -q
+
+# Recompute the published numbers in the other languages and require them to
+# agree. Skips any toolchain that is not installed; CI runs all of them.
+verify:
+	./verify/verify.sh
 
 # Feasibility check: can a hand-written controller that already knows the answer
 # satisfy the success criterion? Run this BEFORE blaming a reward function.

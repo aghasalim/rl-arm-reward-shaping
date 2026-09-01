@@ -19,3 +19,9 @@ artifacts/*
 !artifacts/v4_potential_seed0.zip
 .env
 .env.local
+
+# Build products of the cross-language checks in verify/. The Rust crate has no
+# dependencies, so target/ is entirely regenerable, and the C and Java checks
+# are compiled to a scratch directory by verify.sh.
+verify/*/target/
+verify/**/*.class

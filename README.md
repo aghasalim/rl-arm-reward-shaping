@@ -119,6 +119,81 @@ final number alone would hide.*
 linearly over the run, so the 8M run is not "the 3M run continued".
 [Caveat](notes/METHODS.md#training-longer-made-it-worse).
 
+## Everything here is computed twice
+
+Every number above came out of one simulator and one report script. The success
+rates, the oracle table, the reward arithmetic and the five-seed summary all
+read the same Python, so a mistake anywhere in it would be reproduced
+identically in every number downstream and nothing would disagree with anything.
+That is not a check, it is one opinion repeated.
+
+`verify/` recomputes the published numbers in eight languages that share no code
+with `src/`, and `.github/workflows/ci.yml` fails the build if any two of them
+disagree. The same job then corrupts a rate in `reports/results.json`, requires
+`verify/verify.sh` to reject it, restores the file and requires a pass, because
+a check that passes on corrupted input is checking nothing.
+
+```bash
+./verify/verify.sh        # 8 passed, 0 failed, 0 skipped
+```
+
+Each check is skipped with a message if its toolchain is missing, so this runs
+on a laptop with only some of them. CI has all eight and fails if any is
+skipped.
+
+| language | what it recomputes | from | measured agreement |
+|---|---|---|---|
+| Python `export_golden.py` | re-dumps the three fixtures the others read | `src/rlarm/env.py` | byte identical, 3762 rows |
+| SQL `summary.sql` | both tables of `reports/results.md`, including the mean and population sd over the five seeds | `reports/results.json` | 12 of 12 rows rebuilt character for character |
+| C `physics.c` | the manipulator dynamics and the RK4 step, its own 2x2 solve | `golden/physics_trace.csv` | worst state error 2.0e-13 over 1100 integrated steps |
+| Go `gocheck/` | the five-seed mean and sd of all nine metrics, then every cell of the table above against the JSON | `reports/results.json` | worst difference 6.9e-18, all 9 metrics |
+| R `verify.R` | the mean and sd of the five seeds, and whether the spread is bigger than 200-episode binomial noise | `reports/results.md` | 43.2% and 5.8% reproduced at the published resolution |
+| Rust `oracle/` | the whole PD oracle: dynamics, inverse kinematics, the PD law, the segment-to-circle collision test and the success criterion | `golden/oracle_layouts.csv` | all 10 published rates exact, 0 of 2000 episode outcomes disagree |
+| Java `Shaping.java` | the policy invariance theorem the shaping is built on, by value iteration on 2000 random MDPs | nothing, this one is the theory | shaped Q matches `Q - Phi` to 4.97e-14, 0 of 2000 optimal policies moved |
+| JavaScript `reward.js` | all six reward functions, step by step, and the loitering table in NOTES.md | `golden/reward_trace.csv` | exact, 0.0e+00 on all 3318 steps |
+
+Four things came out of this that were stated in the write-up but had never been
+run.
+
+**The Euler claim.** The method section says semi-implicit Euler injects energy
+into the unforced arm and RK4 does not, and `tests/test_physics.py` only ever
+tested the RK4 half. The C check runs both on the same trajectory: over 500
+steps at dt=0.02, RK4 drifts 2.201e-08 in relative energy and Euler drifts
+1.476e-01, so the alternative really would fail the 1e-3 threshold the test
+demands, by six orders of magnitude.
+
+**The oracle table is not a coincidence of my own physics.** The Rust replay
+takes only the 200 task layouts from Python and rebuilds everything after that
+from scratch. It lands on all ten published rates and, more to the point, agrees
+episode by episode: 2000 outcomes, none disagreeing. A 100,000 draw bootstrap it
+can afford and `report.py` cannot puts the 73.5% headline at [67.5%, 79.5%], so
+the 43.2% agent is behind the oracle by more than sampling error.
+
+**The invariance theorem holds, and I can now say exactly what the step limit
+does to it.** On 2000 random MDPs the shaped optimal Q is `Q - Phi` to 4.97e-14
+and no optimal policy moves, while three deliberately broken variants of the
+shaping term do move it, so the check is not vacuous. Under a step limit, which
+values the cutoff at zero rather than at `-Phi`, backward induction gives an
+exact identity: shaping a truncated episode is the same thing as paying a bonus
+of `Phi(s)` at the moment the clock runs out. That holds to 2.31e-14 at every
+horizon tried. How much it moves the first action depends on the horizon, from
+1565 of 2000 MDPs at a 1-step cutoff down to 0 of 2000 at 200 steps, so at
+gamma=0.99 the 200-step cutoff does not displace the first action of a generic
+MDP. What it leaves behind is the cutoff bonus itself, which under `Phi = -dist`
+is worth the most where the arm never went, and that is the v4 exploit.
+
+**The "about 15 points" in Limitations.** R computes the difference this design
+could actually resolve, five seeds against five at alpha 0.05 and 80% power,
+and gets 13.2 points. The seeds also differ by more than 200-episode binomial
+noise, chi-square 13.92 on 4 df, p = 0.0075, so the spread being reported is
+seed variance rather than episode sampling.
+
+Nothing disagreed. No published number in this repository turned out to be
+wrong, which is the boring outcome and the one I wanted. One gap is worth
+naming: the 8M-step comparison, 18.0% +/- 6.6%, has no per-seed file committed,
+so nothing in `verify/` recomputes it. Every other number in this README is
+checked by at least one implementation that did not produce it.
+
 ## Limitations
 
 The agent loses to a controller I wrote in an afternoon, 43.2% against 73.5%, and
@@ -170,6 +245,7 @@ src/rlarm/
   record.py     GIF recording on fixed seeds
 app/showcase.py Streamlit showcase
 tests/          physics and env-contract tests
+verify/         the published numbers, recomputed in eight other languages
 ```
 
 ## What I'd do next
