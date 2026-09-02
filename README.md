@@ -172,7 +172,7 @@ src/rlarm/
   record.py     GIF recording on fixed seeds
 app/showcase.py Streamlit showcase
 tests/          physics and env-contract tests
-verify/         the published numbers, recomputed in eight other languages
+verify/         the published numbers, recomputed independently
 ```
 
 ## What I'd do next
