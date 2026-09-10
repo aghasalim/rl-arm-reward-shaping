@@ -9,18 +9,26 @@
 video and the per-seed spread.
 
 A 2-link torque-controlled arm has to reach a randomly placed target and stay
-there, with an obstacle in the workspace. I built the environment, wrote six
-reward functions, and the agent exploited two of them in ways I did not see
-coming. The final agent scores **43.2% ± 5.8%** success over five seeds, against
+there, with an obstacle in the workspace. I built the environment and wrote six
+reward functions for it. Four of those versions are a story about me being
+wrong. Two got exploited outright, in ways I did not see coming. Then, with both
+exploits patched and the agent still solving nothing, the real lesson landed:
+the problem had never been the reward at all. The arm was under-actuated, and a
+third of the episodes I had been grading were not winnable by anything. Four
+reward functions spent on a physics bug is the part of this repo I would want
+read first, and it is three sections down.
+
+The final agent scores **43.2% ± 5.8%** success over five seeds, against
 **73.5%** for a hand-written PD controller, which I am not going to hide. It wins
 on one axis, collisions, 17.3% against the oracle's 25.5%, because a PD
 controller tracking an inverse-kinematics solution drives straight through
 obstacles and the policy learned to go around.
 
 Full write-up in **[notes/METHODS.md](notes/METHODS.md)**, working log in
-**[NOTES.md](NOTES.md)**. The numbers published here are recomputed from the
-committed results by independent implementations in `verify/`, and CI fails the
-build if any of them disagree.
+**[NOTES.md](NOTES.md)**. The numbers below are not just read back out of the
+files that produced them: `verify/` replays the physics and every reward the
+environment paid in C, Java, Rust, Go, R, SQL and JavaScript, and CI stops on
+any disagreement.
 
 ## The task
 
@@ -60,11 +68,19 @@ income. [Derivation](notes/METHODS.md#2-the-agent-farmed-my-provably-safe-shapin
 
 ## The bug that wasn't a reward bug
 
-Both exploits fixed, the agent still solved nothing, so I wrote a PD controller
-with exact inverse kinematics to ask whether the criterion was achievable at all.
-At my original torque limit it scored **65.0%** with the obstacle removed: the arm
-was under-actuated, and I had been trying to fix impossible episodes with reward
-functions. [Torque table](notes/METHODS.md#3-the-bug-that-wasnt-a-reward-bug).
+This one cost the most and taught the most. Both exploits fixed, the agent still
+solved nothing, and my instinct was to write reward function number five.
+Instead I wrote a PD controller with exact inverse kinematics and asked a
+different question: is the criterion reachable at all? At the torque limit I had
+been using it scored **65.0%** with the obstacle removed. A third of episodes
+were physically unwinnable. I had spent four reward functions trying to shape my
+way out of a constant, `MAX_TORQUE = 2.0`, that no policy could argue with.
+Raising it to 8.0 takes the same oracle to 97%.
+
+The habit that came out of it is the one thing here I would carry to another
+project: establish the ceiling with something dumb and non-learned before you
+train anything against it. `make oracle` exists for that reason.
+[Torque table](notes/METHODS.md#3-the-bug-that-wasnt-a-reward-bug).
 
 ## Results
 
@@ -138,9 +154,9 @@ make shaping && make final && make eval && make plots && make videos
 make showcase
 ```
 
-`make oracle` checks the task is solvable before training anything, the habit the
-project is really about. `make final` is the reported agent, 3M steps × 5 seeds
-run in parallel on CPU. `make long8m` is the 8M comparison, roughly 40 minutes on
+`make oracle` is the feasibility check described above, and it runs before
+anything trains. `make final` is the reported agent, 3M steps × 5 seeds run in
+parallel on CPU. `make long8m` is the 8M comparison, roughly 40 minutes on
 10 CPU cores.
 
 ```bash
@@ -172,7 +188,7 @@ src/rlarm/
   record.py     GIF recording on fixed seeds
 app/showcase.py Streamlit showcase
 tests/          physics and env-contract tests
-verify/         the published numbers, recomputed independently
+verify/         the physics and the rewards, replayed in seven other languages
 ```
 
 ## What I'd do next
@@ -187,13 +203,13 @@ tune the reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next
 
 ## References
 
-The papers and sources this implementation follows. Each one is here because
-the code uses the method, the dataset or the metric it describes.
+Three: the algorithm, the theorem the agent farmed, and the implementation of
+the first.
 
 - **Schulman, Wolski, Dhariwal, Radford, Klimov. Proximal Policy Optimization Algorithms. 2017.** [arXiv:1707.06347](https://arxiv.org/abs/1707.06347) the algorithm used.
 - **Ng, Harada, Russell. Policy Invariance Under Reward Transformations. ICML 1999.** potential based shaping, and the condition under which shaping does not change the optimal policy.
 - **Raffin, Hill, Gleave et al. Stable-Baselines3: Reliable Reinforcement Learning Implementations. JMLR 22, 2021.** the PPO implementation.
 
-## Author and licence
+## Licence
 
-Aghasalim Mustafazada. MIT, see [LICENSE](LICENSE).
+MIT throughout. See [LICENSE](LICENSE).
