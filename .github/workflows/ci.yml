@@ -53,7 +53,7 @@ jobs:
           ./verify/verify.sh | tee /tmp/verify.log
           grep -q ', 0 skipped' /tmp/verify.log
       - name: The checks have to be able to fail
-        # A check that passes on corrupted input is checking nothing. Move one
+        # A check that cannot fail is not a check. Move one
         # published rate, require rejection, put it back, require a pass.
         run: |
           cp reports/results.json /tmp/results.json
