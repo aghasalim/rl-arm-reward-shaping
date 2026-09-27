@@ -165,8 +165,7 @@ docker build -t rl-arm-reward-shaping . && docker run -p 8501:8501 rl-arm-reward
 
 That image was built and verified on `linux/arm64`: 1.98 GB, the container
 reports healthy, and the trained policy loads and evaluates from inside it. It
-ships only the five models the showcase loads, not the sweep arms or the 8M
-comparison seeds. [What is in the image](notes/METHODS.md#6-docker-image).
+ships only the five models the showcase loads. [What is in the image](notes/METHODS.md#6-docker-image).
 
 ## Method
 
@@ -198,7 +197,7 @@ halved, 43.2% down to 18.0% across five seeds, and I cannot account for it.
 Running both horizons at a constant learning rate would separate "longer training
 hurts" from "the linear decay hurts when it is stretched". Second on the list is
 the timeout, not the reward, because 39.5% of episodes end with the arm still
-travelling, which makes arriving the bottleneck, not settling. I would not
+travelling, which makes arriving the bottleneck. I would not
 tune the reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
 
 ## References
