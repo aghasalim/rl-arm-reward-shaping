@@ -4,6 +4,7 @@
 [![demo-link](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/demo.yml/badge.svg)](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/demo.yml)
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23003674.svg)](https://doi.org/10.5281/zenodo.23003674)
 
 **[▶ Live demo](https://rl-arm-reward-shaping.streamlit.app/)**: the exploits on
 video and the per-seed spread.
