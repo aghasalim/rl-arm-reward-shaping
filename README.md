@@ -172,7 +172,7 @@ comparison seeds. [What is in the image](notes/METHODS.md#6-docker-image).
 
 Rigid-body manipulator dynamics (Spong ch. 7) integrated with RK4, not Euler:
 under semi-implicit Euler the unforced arm gains energy and an agent will learn to
-pump the artefact instead of solving the task. PPO from Stable-Baselines3,
+pump the artefact. PPO from Stable-Baselines3,
 `[128, 128]` MLP, 13-dimensional observation including hold progress, no
 `VecNormalize`. [Full method](notes/METHODS.md#7-method).
 
@@ -198,7 +198,7 @@ halved, 43.2% down to 18.0% across five seeds, and I cannot account for it.
 Running both horizons at a constant learning rate would separate "longer training
 hurts" from "the linear decay hurts when it is stretched". Second on the list is
 the timeout, not the reward, because 39.5% of episodes end with the arm still
-travelling, which makes arriving the bottleneck instead of settling. I would not
+travelling, which makes arriving the bottleneck, not settling. I would not
 tune the reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
 
 ## References
