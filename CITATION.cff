@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: If you use this work, please cite it as below.
+title: "Teaching an arm to stop, not just arrive"
+abstract: "Custom Gymnasium arm environment + PPO, where the README leads with the two reward functions the agent exploited: deliberate self-termination, and farming the drift in potential-based shaping."
+type: software
+authors:
+  - family-names: Mustafazada
+    given-names: Aghasalim
+    orcid: "https://orcid.org/0009-0001-8746-4582"
+    affiliation: "Howest University of Applied Sciences"
+repository-code: "https://github.com/aghasalim/rl-arm-reward-shaping"
+url: "https://aghasalim.github.io/"
+license: MIT
+keywords:
+  - gymnasium
+  - machine learning
+  - ppo
+  - reinforcement learning
+  - reward hacking
+  - reward shaping
+  - robotics
