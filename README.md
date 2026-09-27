@@ -45,7 +45,7 @@ exploited. [More](notes/METHODS.md#1-the-task).
 
 ## The two exploits
 
-**v2, distance reward.** It paid `-distance` every step with no collision penalty,
+v2, distance reward. It paid `-distance` every step with no collision penalty,
 and a collision ends the episode, which stops the cost accruing. The agent found
 this in **200 out of 200** evaluation episodes, and the `-5` penalty I added in v3
 was no deterrent against a `-100` alternative.
@@ -198,7 +198,7 @@ halved, 43.2% down to 18.0% across five seeds, and I cannot account for it.
 Running both horizons at a constant learning rate would separate "longer training
 hurts" from "the linear decay hurts when it is stretched". Second on the list is
 the timeout, not the reward, because 39.5% of episodes end with the arm still
-travelling, which makes arriving the bottleneck rather than settling. I would not
+travelling, which makes arriving the bottleneck instead of settling. I would not
 tune the reward further. [Four ideas, ranked](notes/METHODS.md#8-what-id-do-next).
 
 ## References
