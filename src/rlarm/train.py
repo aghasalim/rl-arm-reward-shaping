@@ -16,6 +16,7 @@ import argparse
 import csv
 import time
 from pathlib import Path
+from typing import Callable
 
 import numpy as np
 from stable_baselines3 import PPO
