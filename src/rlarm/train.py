@@ -79,7 +79,8 @@ class EpisodeLogger(BaseCallback):
             w.writerows(self.rows)
 
 
-def make_env(reward_version: str, seed: int, rank: int, env_kwargs: dict | None = None):
+def make_env(reward_version: str, seed: int, rank: int,
+             env_kwargs: dict | None = None) -> Callable[[], ReachAvoidEnv]:
     def _init():
         env = ReachAvoidEnv(reward_version=reward_version, **(env_kwargs or {}))
         env.reset(seed=seed * 1000 + rank)
