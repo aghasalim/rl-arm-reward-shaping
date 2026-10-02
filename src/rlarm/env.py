@@ -274,7 +274,7 @@ class ReachAvoidEnv(gym.Env):
         s[1] = (s[1] + math.pi) % (2 * math.pi) - math.pi
         self.state = s
 
-    def step(self, action):
+    def step(self, action: np.ndarray):
         tau = np.clip(np.asarray(action, dtype=np.float64), -1, 1) * self.max_torque
         self._integrate(tau)
         self._steps += 1
