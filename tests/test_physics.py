@@ -96,3 +96,20 @@ def test_episode_terminates_within_step_limit():
             assert i + 1 <= E.MAX_STEPS
             return
     pytest.fail("episode never ended")
+
+
+@pytest.mark.parametrize("version", ["v4_potential", "v5_progress", "v6_goalfocus"])
+def test_idle_arm_reward(version):
+    """A zero-torque arm at rest must not be paid for waiting. Under v5/v6 the
+    γ=1 shaping telescopes to zero, so each step costs exactly time_cost. v4 is
+    kept broken on purpose (exploit #2) and pays (1-γ)·dist for standing still."""
+    e = E.ReachAvoidEnv(reward_version=version)
+    e.reset(seed=0)
+    assert e._dist() > E.GOAL_TOL
+    for _ in range(20):
+        _, r, terminated, truncated, _ = e.step(np.zeros(2))
+        assert not (terminated or truncated)
+        if version == "v4_potential":
+            assert r > 0
+        else:
+            assert r == pytest.approx(-e.time_cost, abs=1e-12)
