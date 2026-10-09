@@ -23,7 +23,7 @@ oracle:
 
 # The reward-shaping story: one seed per version, all in the same environment.
 shaping:
-	@for v in v1_sparse v2_distance v3_penalties v4_potential; do \
+	@for v in v1_sparse v2_distance v3_penalties v4_potential v5_progress v6_goalfocus; do \
 		OMP_NUM_THREADS=2 $(PY) -m src.rlarm.train --reward-version $$v --seed 0 \
 			--timesteps 1200000 --checkpoints 100000 400000 & \
 	done; wait
