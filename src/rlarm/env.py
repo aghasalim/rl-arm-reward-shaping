@@ -362,7 +362,7 @@ class ReachAvoidEnv(gym.Env):
         if self._settled():
             r += 1.0
         if collided:
-            # Worst case for simply surviving is -2 (200 x -0.01), so ending the
+            # Worst case for simply surviving is -6 (200 x -0.03), so ending the
             # episode early can never be the cheap way out. This is the fix for
             # exploit #1.
             r -= self.collision_penalty
