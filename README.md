@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.jpg" alt="Line drawing of a two joint robot arm reaching for a target, beside a reward curve that spikes in the wrong place" width="100%"></p>
+
 # Teaching an arm to stop, not just arrive
 
 [![ci](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml)
@@ -30,6 +32,22 @@ log is in **[NOTES.md](NOTES.md)**. I didn't want the numbers below to only come
 from the same code that produced them. So `verify/` replays the physics and
 every reward the environment paid in C, Java, Rust, Go, R, SQL and JavaScript,
 and CI stops if anything disagrees.
+
+<details>
+<summary>Contents</summary>
+
+- [The task](#the-task)
+- [The two exploits](#the-two-exploits)
+- [The bug that wasn't a reward bug](#the-bug-that-wasnt-a-reward-bug)
+- [Results](#results)
+- [Limitations](#limitations)
+- [Running it](#running-it)
+- [Method](#method)
+- [What I'd do next](#what-id-do-next)
+- [References](#references)
+- [Licence](#licence)
+
+</details>
 
 ## The task
 
