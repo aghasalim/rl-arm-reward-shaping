@@ -1,5 +1,3 @@
-<p align="center"><img src="assets/banner.jpg" alt="Line drawing of a two joint robot arm reaching for a target, beside a reward curve that spikes in the wrong place" width="100%"></p>
-
 # Teaching an arm to stop, not just arrive
 
 [![ci](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml/badge.svg)](https://github.com/aghasalim/rl-arm-reward-shaping/actions/workflows/ci.yml)
